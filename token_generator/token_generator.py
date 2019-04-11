@@ -1,5 +1,10 @@
 from user import User
+from persistence.user_persistence import UserPersistence
+
 import token_gen_algorithm as token_gen
+from datetime import datetime
+from datetime import timedelta
+import time
 
 def create_new_user():
     user_created = False
@@ -10,10 +15,10 @@ def create_new_user():
         local_password = input("Senha local: ")
         seed_password = input("Senha semente: ")
         print()
-
+        
         user = User(username, local_password, seed_password)
 
-        if user.save():
+        if UserPersistence.create(user):
             user_created = True
         else:
             print("O usuário já existe")
@@ -21,7 +26,6 @@ def create_new_user():
     return user
 
 def login():
-    users = User.load_all()
     user_authenticated = False
 
     while not user_authenticated:
@@ -29,14 +33,13 @@ def login():
         username = input("Usuario: ")
         local_password = input("Senha local: ")
         
-        user = User.find_by_username(username, users)
+        user = UserPersistence.find_by_username(username)
 
-        if user is not None:
-            if user.local_password_matches(local_password):
-                user_authenticated = True
-                current_user = user
-            else:
-                print("Senha errada")
+        if (user is not None) and (user.local_password_matches(local_password)):
+            user_authenticated = True
+            current_user = user
+        elif (user is not None) and (not user.local_password_matches(local_password)):
+            print("Senha errada")
         else:
             print("Usuario nao encontrado")
     
@@ -66,8 +69,9 @@ if __name__ == '__main__':
 
     while True:
         # Espera até o usuário pedir para gerar os tokens
-        input("\nAperte Enter para gerar os tokens.\n")
+        input("\nAperte Enter quando quiser gerar os tokens.\n")
 
+        time_of_last_generation = datetime.now()
         tokens = token_gen.generate_tokens(current_user.seed_password, n_tokens)
 
         # Antes de exibir:
@@ -81,10 +85,18 @@ if __name__ == '__main__':
         tokens = [token[0:6] for token in tokens]
 
         # Exibe um por um conforme o usuário solicita
-        print("Tokens gerados. Aperte Enter para ver o próximo token")
+        print("Tokens gerados. Aperte Enter para visualizar o próximo token")
         
         for token in tokens:
             print(token, end='')
             input()
 
-        print("Você utilizou todos os seus tokens. Aguarde alguns instantes para gerar novos tokens.")
+        print("\nAguarde o próximo minuto para gerar mais tokens.")
+
+        next_tokens_unlock_time = time_of_last_generation.replace(second=0, microsecond=0) + timedelta(minutes=1)
+
+        while datetime.now() < next_tokens_unlock_time:
+            print("...")
+
+            time.sleep(5)
+
