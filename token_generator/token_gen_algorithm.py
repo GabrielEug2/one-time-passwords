@@ -8,16 +8,24 @@ def generate_tokens(seed, n):
     current_time = datetime.now().strftime("%d/%m/%y %H:%M")
     
     # TODO: incluir salt
-    first_token = _hash(seed + current_time)
+    first_token = _hash_function(seed + current_time)
 
     tokens = list()
     tokens.append(first_token)
 
     for i in range(0, n-1):
-        i_esim_token = _hash(tokens[-1])
+        i_esim_token = _hash_function(tokens[-1])
         tokens.append(i_esim_token)
+
+    # Deixa só os N primeiros caracteres de cada token
+    tokens = [token[0:6] for token in tokens]
+
+    # Inverte a ordem, porque a partir de um token é
+    # possível regerar os próximos (e obviamente não
+    # queremos isso)
+    tokens.reverse()
 
     return tokens
 
-def _hash(text):
+def _hash_function(text):
     return hashlib.md5(text.encode('utf-8')).hexdigest()

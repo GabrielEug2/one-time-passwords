@@ -1,1 +1,5 @@
 **/__pycache__/
+
+token_generator/*.json
+main_app/*.db
+

@@ -44,8 +44,7 @@ class UserPersistence:
 
             return True
         else:
-            # Seria um update, mas essa funcionalidade
-            # não é necessária a principio
+            # Seria um update, mas nesse caso não queremos fazer isso
             return False
 
     @classmethod
