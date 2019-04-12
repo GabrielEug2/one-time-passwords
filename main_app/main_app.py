@@ -1,5 +1,5 @@
-from user import User
 from token_auth import TokenAuth
+from user import User
 
 current_user = TokenAuth.require_auth()
 

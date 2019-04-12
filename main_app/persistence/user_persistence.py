@@ -17,9 +17,9 @@ class UserPersistence:
 
         cur = conn.cursor()
         cur.execute('SELECT * FROM Users WHERE username=?', [user.username])
-        cur.fetchall()
+        user_row = cur.fetchone()
 
-        user_exists = len(cur.fetchall()) > 0
+        user_exists = user_row is not None
 
         if not user_exists:
             # Persiste o novo usuário
@@ -29,8 +29,7 @@ class UserPersistence:
 
             user_created = True
         else:
-            # Seria um update, mas essa funcionalidade
-            # não é necessária a principio
+            # Seria um update, mas nesse caso não queremos fazer isso
             user_created = False
         
         conn.commit()
@@ -46,7 +45,10 @@ class UserPersistence:
         cur.execute('SELECT * FROM Users WHERE username=? LIMIT 1', [username])
         user_row = cur.fetchone()
 
-        if user_row is not None:
+        user_exists = user_row is not None
+
+        if user_exists:
+            # Nâo é pra fazer o hash aqui pois já foi salvo hasheado no banco
             user = User(
                 username=user_row[0],
                 seed_password=user_row[1],

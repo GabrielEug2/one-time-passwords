@@ -1,9 +1,7 @@
 import hashlib
-import json
 
 class User:
-    def __init__(self, username, seed_password, hash_password=True,
-                 last_token_used=None):
+    def __init__(self, username, seed_password, hash_password=True, last_token_used=None):
         self.username = username
 
         if hash_password:

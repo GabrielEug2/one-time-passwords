@@ -1,7 +1,7 @@
 from password_auth import PasswordAuth
 from user import User
-import token_gen_algorithm as token_gen
 
+import token_gen_algorithm as token_gen
 from datetime import datetime
 from datetime import timedelta
 import time

@@ -2,10 +2,6 @@ from user import User
 from persistence.user_persistence import UserPersistence
 import token_gen_algorithm as token_gen
 
-from datetime import datetime
-from datetime import timedelta
-import time
-
 class TokenAuth:
     @classmethod
     def require_auth(cls):
@@ -76,7 +72,7 @@ class TokenAuth:
         valid_token = False
 
         while not valid_token:
-            token = input("Token: ")
+            token = input("\nToken: ")
             
             if cls.token_is_valid(token, user):
                 cls.consume_token(token, user)
@@ -92,7 +88,8 @@ class TokenAuth:
         valid_tokens_for_user = token_gen.generate_tokens(user.seed_password, N_TOKENS)
 
         # O último token utilizado e os tokens que podem
-        # ser gerados a partir dele não são válidos
+        # ser gerados a partir dele não são válidos, então
+        # eles são removidos da lista
         if (user.last_token_used is not None) and (user.last_token_used in valid_tokens_for_user):
             last_token_index = valid_tokens_for_user.index(user.last_token_used)
 

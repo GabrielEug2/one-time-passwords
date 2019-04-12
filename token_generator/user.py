@@ -1,5 +1,4 @@
 import hashlib
-import json
 
 class User:
     def __init__(self, username, local_password, seed_password, hash_passwords=True):

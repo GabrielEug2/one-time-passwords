@@ -16,7 +16,7 @@ class PasswordAuth:
             elif option == '2':
                 new_user = cls.ask_for_new_user_info()
 
-                # Já faz login direto depois do cadastro
+                # Já faz login direto após o cadastro
                 current_user = new_user
             else:
                 print("Opcao invalida")
@@ -56,7 +56,7 @@ class PasswordAuth:
 
             if (user is not None) and (user.local_password_matches(local_password)):
                 current_user = user
-
+                
                 user_authenticated = True
             elif (user is not None) and (not user.local_password_matches(local_password)):
                 print("Senha errada")

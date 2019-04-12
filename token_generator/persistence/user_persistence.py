@@ -42,10 +42,12 @@ class UserPersistence:
             with open(cls.USERS_FILENAME, 'w') as f:
                 json.dump([user.__dict__ for user in users], f, indent=4)
 
-            return True
+            user_created = True
         else:
             # Seria um update, mas nesse caso não queremos fazer isso
-            return False
+            user_created = False
+        
+        return user_created
 
     @classmethod
     def find_by_username(cls, username):
