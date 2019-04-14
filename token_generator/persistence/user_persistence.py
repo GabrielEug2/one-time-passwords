@@ -22,6 +22,7 @@ class UserPersistence:
                 obj['username'],
                 obj['local_password'],
                 obj['seed_password'],
+                obj['salt'],
                 existing_user=True
             )
 

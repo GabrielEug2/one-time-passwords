@@ -6,7 +6,7 @@ DB_NAME = 'database.db'
 conn = sqlite3.connect(DB_NAME)
 cur = conn.cursor()
 cur.execute('CREATE TABLE IF NOT EXISTS Users(username text, '
-          'seed_password text, last_token_used text)')
+          'seed_password text, salt text, last_token_used text)')
 conn.commit()
 conn.close()
 
@@ -23,8 +23,8 @@ class UserPersistence:
 
         if not user_exists:
             # Persiste o novo usuário
-            cur.execute('INSERT INTO Users VALUES (?, ?, ?)',
-                [user.username, user.seed_password, None]
+            cur.execute('INSERT INTO Users VALUES (?, ?, ?, ?)',
+                [user.username, user.seed_password, user.salt, None]
             )
 
             user_created = True
@@ -48,11 +48,11 @@ class UserPersistence:
         user_exists = user_row is not None
 
         if user_exists:
-            # Nâo é pra fazer o hash aqui pois já foi salvo hasheado no banco
             user = User(
                 username=user_row[0],
                 seed_password=user_row[1],
-                last_token_used=user_row[2],
+                salt=user_row[2],
+                last_token_used=user_row[3],
                 existing_user=True
             )
         else:

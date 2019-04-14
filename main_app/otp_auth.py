@@ -18,7 +18,11 @@ class OTPAuth:
             elif option == '2':
                 new_user = cls.ask_for_new_user_info()
 
-                # TODO: mostrar o salt gerado
+                print("Quase lá! Para terminar o seu cadastro, abra o gerador " +
+                      "de senhas no seu dispositivo, selecione \"Novo usuário\" " +
+                      "e insira suas informações.\n")
+                print("Quando solicitado, insira o salt abaixo: ")
+                print(new_user.salt)
 
                 current_user = cls.ask_for_login_info()
             else:
@@ -31,7 +35,7 @@ class OTPAuth:
         user_created = False
 
         while not user_created:
-            print("\n-- Criando novo usuário --")
+            print("\n-- Cadastro --")
             username = input("Nome de usuario: ")
             seed_password = input("Senha semente: ")
             print()
@@ -57,14 +61,13 @@ class OTPAuth:
 
             user = UserPersistence.find_by_username(username)
 
-            user_exists = user is not None
-
-            if user_exists and cls.token_is_valid(token, user):
+            if (user is not None) and (cls.token_is_valid(token, user)):
                 cls.consume_token(token, user)
                 current_user = user
+                print("Token aceito")
 
                 user_authenticated = True
-            elif user_exists:
+            elif user is not None:
                 print("Token inválido ou expirado")
             else:
                 print("Usuário não encontrado")
@@ -75,7 +78,7 @@ class OTPAuth:
     def token_is_valid(cls, user_token, user):
         N_TOKENS = 5
 
-        valid_tokens_for_user = token_gen.generate_tokens(user.seed_password, N_TOKENS)
+        valid_tokens_for_user = token_gen.generate_tokens(user.seed_password, user.salt, N_TOKENS)
 
         # O último token utilizado e os tokens que podem ser gerados
         # a partir dele não são válidos, então eles são removidos da lista
@@ -83,7 +86,8 @@ class OTPAuth:
             (user.last_token_used in valid_tokens_for_user)):
 
             last_token_index = valid_tokens_for_user.index(user.last_token_used)
-            del valid_tokens_for_user[last_token_index:]
+            # O "+1" é para incluir a posição do token em questão
+            del valid_tokens_for_user[:last_token_index+1]
 
         for token in valid_tokens_for_user:
             if token == user_token:

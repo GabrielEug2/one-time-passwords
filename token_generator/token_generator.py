@@ -20,7 +20,7 @@ while True:
     input("\nAperte Enter quando quiser gerar os tokens.\n")
 
     time_of_last_generation = datetime.now()
-    tokens = token_gen.generate_tokens(current_user.seed_password, N_TOKENS)
+    tokens = token_gen.generate_tokens(current_user.seed_password, current_user.salt, N_TOKENS)
 
     # Exibe um por um conforme o usuário solicita
     print("Tokens gerados. Aperte Enter para visualizar o próximo token")

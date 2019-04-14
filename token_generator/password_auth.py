@@ -28,13 +28,14 @@ class PasswordAuth:
         user_created = False
 
         while not user_created:
-            print("\n-- Criando novo usuário --")
+            print("\n-- Cadastro --")
             username = input("Nome de usuario: ")
-            local_password = input("Senha local: ")
             seed_password = input("Senha semente: ")
+            salt = input("Salt (gerado ao se cadastrar na aplicação principal): ")
+            local_password = input("Senha local (será usada para acessar o gerador nas próximas vezes): ")
             print()
             
-            user = User(username, local_password, seed_password)
+            user = User(username, local_password, seed_password, salt)
             
             if UserPersistence.create(user):
                 user_created = True

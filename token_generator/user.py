@@ -1,15 +1,16 @@
 import hashlib
 
 class User:
-    def __init__(self, username, local_password, seed_password, existing_user=False):
+    def __init__(self, username, local_password, seed_password, salt, existing_user=False):
         self.username = username
+        self.salt = salt
 
         if existing_user:
-            # Se foi persistido, as senhas foram hasheadas.
-            # Queremos somente reconstruir o mesmo objeto na memória
+            # Só estamos reconstruindo o mesmo objeto na memória
             self.local_password = local_password
             self.seed_password = seed_password
         else:
+            # Faz o hash das senhas
             self.local_password = User._hash_function(local_password)
             self.seed_password = User._hash_function(seed_password)
 
