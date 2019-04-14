@@ -2,7 +2,8 @@ from user import User
 from persistence.user_persistence import UserPersistence
 import token_gen_algorithm as token_gen
 
-class TokenAuth:
+# OTP = One-time Password
+class OTPAuth:
     @classmethod
     def require_auth(cls):
         current_user = None
@@ -13,19 +14,13 @@ class TokenAuth:
             option = input("Escolha uma opcao: ")
 
             if option == '1':
-                user_authenticating = cls.ask_for_username()
-            
-                cls.ask_for_token(user_authenticating)
-
-                current_user = user_authenticating
+                current_user = cls.ask_for_login_info()
             elif option == '2':
                 new_user = cls.ask_for_new_user_info()
 
                 # TODO: mostrar o salt gerado
 
-                cls.ask_for_token(new_user)
-
-                current_user = new_user
+                current_user = cls.ask_for_login_info()
             else:
                 print("Opcao invalida")
         
@@ -51,35 +46,30 @@ class TokenAuth:
         return user
 
     @classmethod
-    def ask_for_username(cls):
-        user_exists = False
+    def ask_for_login_info(cls):
+        user_authenticated = False
 
-        while not user_exists:
+        while not user_authenticated:
             print("\n-- Login --")
             username = input("Usuario: ")
+            token = input("Token: ")
+            print()
 
             user = UserPersistence.find_by_username(username)
 
-            if user is not None:
-                user_exists = True
-            else:
-                print("Usuario nao encontrado")
+            user_exists = user is not None
 
-        return user
-
-    @classmethod
-    def ask_for_token(cls, user):
-        valid_token = False
-
-        while not valid_token:
-            token = input("\nToken: ")
-            
-            if cls.token_is_valid(token, user):
+            if user_exists and cls.token_is_valid(token, user):
                 cls.consume_token(token, user)
+                current_user = user
 
-                valid_token = True
-            else:
+                user_authenticated = True
+            elif user_exists:
                 print("Token inválido ou expirado")
+            else:
+                print("Usuário não encontrado")
+
+        return current_user
 
     @classmethod
     def token_is_valid(cls, user_token, user):
@@ -87,12 +77,12 @@ class TokenAuth:
 
         valid_tokens_for_user = token_gen.generate_tokens(user.seed_password, N_TOKENS)
 
-        # O último token utilizado e os tokens que podem
-        # ser gerados a partir dele não são válidos, então
-        # eles são removidos da lista
-        if (user.last_token_used is not None) and (user.last_token_used in valid_tokens_for_user):
-            last_token_index = valid_tokens_for_user.index(user.last_token_used)
+        # O último token utilizado e os tokens que podem ser gerados
+        # a partir dele não são válidos, então eles são removidos da lista
+        if ((user.last_token_used is not None) and
+            (user.last_token_used in valid_tokens_for_user)):
 
+            last_token_index = valid_tokens_for_user.index(user.last_token_used)
             del valid_tokens_for_user[last_token_index:]
 
         for token in valid_tokens_for_user:

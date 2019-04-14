@@ -51,6 +51,7 @@ class PasswordAuth:
             print("\n-- Login --")
             username = input("Usuario: ")
             local_password = input("Senha local: ")
+            print()
 
             user = UserPersistence.find_by_username(username)
 
@@ -58,9 +59,7 @@ class PasswordAuth:
                 current_user = user
                 
                 user_authenticated = True
-            elif (user is not None) and (not user.local_password_matches(local_password)):
-                print("Senha errada")
             else:
-                print("Usuario nao encontrado")
+                print("Usuário ou senha incorretos")
                 
         return current_user

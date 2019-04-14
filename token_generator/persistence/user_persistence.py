@@ -18,12 +18,11 @@ class UserPersistence:
         users = []
 
         for obj in objects_array:
-            # Nâo é pra fazer o hash aqui pois já foi salvo hasheado no arquivo
             user = User(
                 obj['username'],
                 obj['local_password'],
                 obj['seed_password'],
-                hash_passwords=False
+                existing_user=True
             )
 
             users.append(user)
@@ -32,11 +31,11 @@ class UserPersistence:
 
     @classmethod
     def create(cls, user):
-        users = cls.load_all()
         user_exists = cls.find_by_username(user.username) is not None
 
         if not user_exists:
             # Persiste o novo usuário
+            users = cls.load_all()
             users.append(user)
 
             with open(cls.USERS_FILENAME, 'w') as f:

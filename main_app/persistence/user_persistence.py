@@ -53,7 +53,7 @@ class UserPersistence:
                 username=user_row[0],
                 seed_password=user_row[1],
                 last_token_used=user_row[2],
-                hash_password=False
+                existing_user=True
             )
         else:
             user = None
