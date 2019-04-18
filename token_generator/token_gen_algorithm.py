@@ -1,13 +1,13 @@
 from datetime import datetime
 import hashlib
 
-def generate_tokens(seed, salt, n):
+def generate_tokens(seed, n):
     if n < 1:
         return []
 
     current_time = datetime.now().strftime("%d/%m/%y %H:%M")
     
-    first_token = _hash_function(seed + salt + current_time)
+    first_token = _hash_function(seed + current_time)
 
     tokens = []
     tokens.append(first_token)

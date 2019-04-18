@@ -78,7 +78,7 @@ class OTPAuth:
     def token_is_valid(cls, user_token, user):
         N_TOKENS = 5
 
-        valid_tokens_for_user = token_gen.generate_tokens(user.seed_password, user.salt, N_TOKENS)
+        valid_tokens_for_user = token_gen.generate_tokens(user.seed_password, N_TOKENS)
 
         # O último token utilizado e os tokens que podem ser gerados
         # a partir dele não são válidos, então eles são removidos da lista
